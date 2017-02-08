@@ -1,0 +1,7 @@
+/.idea/
+/target/
+/project/project/
+/project/target/
+
+setup.bat
+setup.env
