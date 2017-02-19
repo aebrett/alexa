@@ -6,10 +6,12 @@ git:
   depth: 500
 
 install:
-  - if test ! -f ~/sbt; then
-      curl -s https://raw.githubusercontent.com/paulp/sbt-extras/e428bbdb514e1ffe245010b3c4f69e9dfa4bbdb3/sbt > ~/sbt &&
-      chmod 0755 ~/sbt
+  - if test ! -f ~/sbt/sbt; then
+      mkdir -p ~/sbt &&
+      curl -s https://raw.githubusercontent.com/paulp/sbt-extras/e428bbdb514e1ffe245010b3c4f69e9dfa4bbdb3/sbt > ~/sbt/sbt &&
+      chmod 0755 ~/sbt/sbt
     ; fi
+  - export PATH=~/sbt:$PATH
   - java -version
 
 cache:
