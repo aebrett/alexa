@@ -12,8 +12,6 @@ import org.bretts.alexa.util._
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
-import scala.language.postfixOps
 
 case class Movie(title: String, status: String) {
   def toSpokenString: String = s"$title is $spokenStatus"
@@ -175,13 +173,4 @@ class CouchPotatoSpeechModel(url: String, apiKey: String) extends StrictLogging 
     } yield b
   }
 
-}
-
-object CouchPotatoTest extends App {
-  try {
-    val r = new CouchPotato(sys.env("CP_URL"), sys.env("CP_API_KEY")).searchProviders("rogue one")
-    println(Await.result(r, 20 seconds))
-  } finally {
-    system.terminate()
-  }
 }
