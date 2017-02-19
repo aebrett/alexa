@@ -60,6 +60,7 @@ class FembotSpeechlet extends Speechlet with StrictLogging {
   }
 
   private lazy val cp = new CouchPotatoSpeechModel(sys.env("CP_URL"), sys.env("CP_API_KEY"))
+  private lazy val sr = new SickRageSpeechModel(sys.env("SR_URL"), sys.env("SR_API_KEY"))
 
   override def onIntent(request: IntentRequest, session: Session): SpeechletResponse = {
     logInvocation("onIntent", request, session)
@@ -71,6 +72,8 @@ class FembotSpeechlet extends Speechlet with StrictLogging {
         reply("Foo, Bar")
       case CouchPotatoSpeechModel.Intent(_) =>
         cp.handle(request, session)
+      case SickRageSpeechModel.Intent() =>
+        sr.handle(request, session)
       case intent =>
         reply(s"Sorry, I didn't understand the intent $intent")
     }

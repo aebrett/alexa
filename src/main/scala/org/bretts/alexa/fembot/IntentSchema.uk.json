@@ -37,6 +37,13 @@
           "type": "AMAZON.DATE"
         }
       ]
+    },
+    {
+      "intent": "SickRageFuture"
+    },
+    {
+      "intent": "SickRageHistory"
     }
   ]
 }
+

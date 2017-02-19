@@ -23,3 +23,13 @@ CouchPotatoAdd download the movie {movie}
 CouchPotatoAdd download film {movie}
 CouchPotatoAdd download the film {movie}
 
+SickRageFuture what shows are on
+SickRageFuture what shows are on this week
+SickRageFuture what shows are scheduled
+SickRageFuture what shows are scheduled this week
+
+SickRageHistory what shows were downloaded
+SickRageHistory what shows were downloaded recently
+SickRageHistory what shows have been downloaded
+SickRageHistory what shows have been downloaded recently
+
