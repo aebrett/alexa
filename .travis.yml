@@ -1,0 +1,23 @@
+language: java
+
+git:
+  # Clone 500 commits deep to (hopefully) ensure we have the most recent tag for git describe to
+  # derive a version number
+  depth: 500
+
+install:
+  - if test ! -f ~/sbt; then
+      curl -s https://raw.githubusercontent.com/paulp/sbt-extras/e428bbdb514e1ffe245010b3c4f69e9dfa4bbdb3/sbt > ~/sbt &&
+      chmod 0755 ~/sbt
+    ; fi
+  - java -version
+
+cache:
+  directories:
+    - ~/sbt
+    - ~/.ivy2
+    - ~/.sbt
+
+script:
+  - ~/sbt updateLambda
+
