@@ -11,3 +11,7 @@ git:
 script:
   - sbt updateLambda
 
+cache:
+  directories:
+    - ~/.ivy2
+    - ~/.sbt
