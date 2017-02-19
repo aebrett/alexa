@@ -2,6 +2,41 @@
   "intents": [
     {
       "intent": "Test"
+    },
+    {
+      "intent": "AMAZON.YesIntent"
+    },
+    {
+      "intent": "AMAZON.NoIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "CouchPotatoFind",
+      "slots": [
+        {
+          "name": "movie",
+          "type": "MOVIE_NAME"
+        },
+        {
+          "name": "releaseYear",
+          "type": "AMAZON.DATE"
+        }
+      ]
+    },
+    {
+      "intent": "CouchPotatoAdd",
+      "slots": [
+        {
+          "name": "movie",
+          "type": "MOVIE_NAME"
+        },
+        {
+          "name": "releaseYear",
+          "type": "AMAZON.DATE"
+        }
+      ]
     }
   ]
 }

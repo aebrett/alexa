@@ -1,1 +1,25 @@
+Test test
 Test run a test
+
+CouchPotatoFind the status of {movie}
+CouchPotatoFind the status of movie {movie}
+CouchPotatoFind the status of the movie {movie}
+CouchPotatoFind the status of film {movie}
+CouchPotatoFind the status of the film {movie}
+CouchPotatoFind what's the status of {movie}
+CouchPotatoFind what's the status of movie {movie}
+CouchPotatoFind what's the status of the movie {movie}
+CouchPotatoFind what's the status of film {movie}
+CouchPotatoFind what's the status of the film {movie}
+
+CouchPotatoAdd add {movie}
+CouchPotatoAdd add movie {movie}
+CouchPotatoAdd add the movie {movie}
+CouchPotatoAdd add film {movie}
+CouchPotatoAdd add the film {movie}
+CouchPotatoAdd download {movie}
+CouchPotatoAdd download movie {movie}
+CouchPotatoAdd download the movie {movie}
+CouchPotatoAdd download film {movie}
+CouchPotatoAdd download the film {movie}
+
