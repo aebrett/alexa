@@ -1,5 +1,8 @@
 language: java
 
+jdk:
+  - oraclejdk8
+
 git:
   # Clone 500 commits deep to (hopefully) ensure we have the most recent tag for git describe to
   # derive a version number
@@ -11,6 +14,7 @@ install:
       curl -s https://raw.githubusercontent.com/paulp/sbt-extras/e428bbdb514e1ffe245010b3c4f69e9dfa4bbdb3/sbt > ~/sbt/sbt &&
       chmod 0755 ~/sbt/sbt
     ; fi
+  
   - export PATH=~/sbt:$PATH
   - java -version
 
