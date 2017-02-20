@@ -73,7 +73,7 @@ class CouchPotato(url: String, apiKey: String) extends StrictLogging {
 }
 
 object CouchPotatoSpeechModel {
-  val Intent = "CouchPotato(.*)".r
+  val Intent = "CouchPotato.*".r
   val NumRegex = "[0-9]".r.unanchored
   val DrRegex = "Dr.".r.unanchored
 }

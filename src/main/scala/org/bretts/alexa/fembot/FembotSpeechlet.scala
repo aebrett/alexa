@@ -70,7 +70,7 @@ class FembotSpeechlet extends Speechlet with StrictLogging {
     val response: SpeechletResponse = coreIntent match {
       case "Test" =>
         reply("Foo, Bar")
-      case CouchPotatoSpeechModel.Intent(_) =>
+      case CouchPotatoSpeechModel.Intent() =>
         cp.handle(request, session)
       case SickRageSpeechModel.Intent() =>
         sr.handle(request, session)
