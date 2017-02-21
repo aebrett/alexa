@@ -27,10 +27,11 @@ case class HistoryShow(showName: String, status: String, date: LocalDateTime, se
 
   def toSpokenString: String = {
     val dateStr =
-      if (DAYS.between(dateTime.toLocalDate, LocalDate.now) < 7) SickRage.outputDayFormat.format(dateTime)
-      else SickRage.outputDateFormat.format(dateTime)
+      if (date.toLocalDate == LocalDate.now) "today"
+      else if (DAYS.between(date.toLocalDate, LocalDate.now) < 7) s"on ${SickRage.outputDayFormat.format(date)}"
+      else s"on ${SickRage.outputDateFormat.format(date)}"
 
-    s"$show_name was ${status.toLowerCase} on $dateStr"
+    s"$showName was ${status.toLowerCase} $dateStr"
   }
 }
 case class HistoryResponse(data: Seq[HistoryShow])
