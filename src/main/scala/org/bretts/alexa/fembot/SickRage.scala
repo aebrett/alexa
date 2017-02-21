@@ -12,7 +12,7 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import com.amazon.speech.speechlet.{IntentRequest, Session, SpeechletResponse}
 import com.typesafe.scalalogging.StrictLogging
 import org.bretts.alexa.util._
-import spray.json.{DefaultJsonProtocol, RootJsonFormat}
+import spray.json._
 
 import scala.concurrent.{Await, Future}
 import scala.util.matching.Regex
@@ -23,8 +23,7 @@ case class Show(show_name: String, airs: String) {
 case class FutureData(today: Seq[Show], soon: Seq[Show])
 case class FutureResponse(data: FutureData)
 
-case class HistoryShow(show_name: String, status: String, date: String) {
-  private def dateTime = SickRage.inputDateFormat.parse[LocalDateTime](date, LocalDateTime.from _)
+case class HistoryShow(showName: String, status: String, date: LocalDateTime, season: Int, episode: Int) {
 
   def toSpokenString: String = {
     val dateStr =
@@ -41,12 +40,24 @@ object SickRageJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val futureDataFormat: RootJsonFormat[FutureData] = jsonFormat2(FutureData)
   implicit val futureResponseFormat: RootJsonFormat[FutureResponse] = jsonFormat1(FutureResponse)
 
-  implicit val historyShowFormat: RootJsonFormat[HistoryShow] = jsonFormat3(HistoryShow)
+  implicit object LocalDateTimeJsonFormat extends JsonFormat[LocalDateTime] {
+    private val inputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm[:ss]")
+
+    def write(dt: LocalDateTime) = JsString(inputDateFormat.format(dt))
+
+    def read(value: JsValue) = value match {
+      case JsString(s) => inputDateFormat.parse(s, LocalDateTime.from _)
+      case _ => deserializationError("Color expected")
+    }
+  }
+
+  implicit val historyShowFormat: RootJsonFormat[HistoryShow] =
+    jsonFormat(HistoryShow, "show_name", "status", "date", "season", "episode")
   implicit val historyResponseFormat: RootJsonFormat[HistoryResponse] = jsonFormat1(HistoryResponse)
+
 }
 
 object SickRage {
-  val inputDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm[:ss]")
   val outputDayFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("EEEE")
   val outputDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("d LLL")
 }
@@ -65,13 +76,17 @@ class SickRage(url: String, apiKey: String) extends StrictLogging {
   }
 
   def history: Future[Seq[HistoryShow]] = {
-    val requestUrl = s"$url/api/$apiKey/?cmd=history&limit=3"
+    val requestUrl = s"$url/api/$apiKey/?cmd=history&limit=10"
     logger.info(s"history URL: $requestUrl")
     val response: Future[HistoryResponse] = Http().singleRequest(HttpRequest(
       uri = requestUrl
     )).flatMap(Unmarshal(_).to[HistoryResponse])
 
-    response.map(_.data)
+    response.map(_.data).map { s =>
+      s.groupBy(h => (h.showName, h.season, h.episode))
+        .mapValues(_.sortWith(_.date isAfter _.date).head)
+        .values.toList.sortWith(_.date isAfter _.date).take(5)
+    }
   }
 
 }
