@@ -41,7 +41,7 @@ object SickRage {
   }
   case class HistoryResponse(data: Seq[HistoryShow])
 
-  case class SearchShow(name: String, tvdbid: String, firstAired: LocalDate)
+  case class SearchShow(name: String, tvdbid: Int, firstAired: LocalDate)
   case class SearchData(results: Option[Seq[SearchShow]])
   case class SearchResponse(data: Option[SearchData])
 
