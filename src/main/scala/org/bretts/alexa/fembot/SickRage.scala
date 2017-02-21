@@ -41,7 +41,7 @@ object SickRage {
   }
   case class HistoryResponse(data: Seq[HistoryShow])
 
-  case class SearchShow(name: String, tvdbid: String, firstAired: LocalDate)
+  case class SearchShow(name: String, tvdbid: Int, firstAired: LocalDate)
   case class SearchData(results: Option[Seq[SearchShow]])
   case class SearchResponse(data: Option[SearchData])
 
@@ -125,7 +125,7 @@ class SickRage(url: String, apiKey: String) extends StrictLogging {
     response.map(_.data.flatMap(_.results).getOrElse(Seq()))
   }
 
-  def addShow(tvdbid: String): Future[Boolean] = {
+  def addShow(tvdbid: Int): Future[Boolean] = {
     val requestUrl = s"$url/api/$apiKey/?cmd=show.addnew&tvdbid=$tvdbid&lang=en&status=wanted"
     logger.info(s"addMovie URL: $requestUrl")
     val response: Future[SimpleResponse] = Http().singleRequest(HttpRequest(
