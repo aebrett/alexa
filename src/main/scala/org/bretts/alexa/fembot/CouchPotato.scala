@@ -13,21 +13,24 @@ import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 import scala.concurrent.{Await, Future}
 
-case class Movie(title: String, status: String) {
-  def toSpokenString: String = s"$title is $spokenStatus"
+object CouchPotato {
 
-  private def spokenStatus = status match {
-    case "active" => "queued"
-    case "done" => "downloaded"
-    case s => s
+  case class Movie(title: String, status: String) {
+    def toSpokenString: String = s"$title is $spokenStatus"
+
+    private def spokenStatus = status match {
+      case "active" => "queued"
+      case "done" => "downloaded"
+      case s => s
+    }
   }
+
+  case class FindResponse(movies: Option[Seq[Movie]])
+  case class SearchMovie(imdb: Option[String], titles: Seq[String], year: Option[Int])
+  case class SearchResponse(movies: Option[Seq[SearchMovie]])
+  case class SimpleResponse(success: Boolean)
 }
-case class FindResponse(movies: Option[Seq[Movie]])
-
-case class SearchMovie(imdb: Option[String], titles: Seq[String], year: Option[Int])
-case class SearchResponse(movies: Option[Seq[SearchMovie]])
-
-case class SimpleResponse(success: Boolean)
+import CouchPotato._
 
 object CouchPotatoJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val movieFormat: RootJsonFormat[Movie] = jsonFormat2(Movie)
@@ -113,9 +116,9 @@ class CouchPotatoSpeechModel(url: String, apiKey: String) extends StrictLogging 
             title.map { t =>
               Await.result(cp.searchProviders(t), timeout) match {
                 case head +: tail =>
-                  requestAddResponse(head, tail, session)
+                  requestAddResponse(t, head, tail, session)
                 case Seq() =>
-                  reply(s"No movies found named $t")
+                  reply(s"Sorry, I couldn't find any movies named '$t'")
               }
             }.getOrElse(reply("Please specify a movie name"))
         }
@@ -124,31 +127,34 @@ class CouchPotatoSpeechModel(url: String, apiKey: String) extends StrictLogging 
         request.intent match {
           case "AMAZON.YesIntent" =>
             if (movie.imdb.exists(imdb => Await.result(cp.addMovie(imdb), timeout)))
-              SpeechletResponse.newTellResponse(output(s"${movie.titles.head} successfully added"))
+              reply(s"${movie.titles.head} successfully added")
             else
-              SpeechletResponse.newTellResponse(output(s"${movie.titles.head} could not be added"))
+              reply(s"${movie.titles.head} could not be added")
           case "AMAZON.NoIntent" =>
             session.attribute[Seq[SearchMovie]]("remaining") match {
               case head +: tail =>
-                requestAddResponse(head, tail, session)
+                requestAddResponse(session.attribute[String]("name"), head, tail, session)
               case Seq() =>
                 val name = session.attribute[String]("name")
-                SpeechletResponse.newTellResponse(output(s"No more movies found named $name"))
+                reply(s"No more movies found named '$name'")
             }
           case "AMAZON.StopIntent" =>
-            SpeechletResponse.newTellResponse(output("OK, stopped"))
+            reply("OK, stopped")
+          case intent =>
+            ask(s"Sorry, I didn't understand the intent '$intent'")
         }
-      case intent =>
-        reply(s"Sorry, I didn't understand the intent $intent")
+      case Some(c) =>
+        reply(s"Sorry, I didn't understand the continuation '$c'")
     }
   }
 
-  private def requestAddResponse(movie: SearchMovie, remaining: Seq[SearchMovie], session: Session): SpeechletResponse = {
+  private def requestAddResponse(name: String, movie: SearchMovie, remaining: Seq[SearchMovie], session: Session): SpeechletResponse = {
     session.continuation = "CouchPotatoAdd"
+    session.attribute_=("name", name)
     session.attribute_=("movie", movie)
     session.attribute_=("remaining", remaining)
     val yearText = movie.year.map(y => s" from $y")
-    val responseText = s"Did you mean ${movie.titles.head}${yearText}? You can answer 'Yes', 'No', or 'Stop'."
+    val responseText = s"Did you mean '${movie.titles.head}'$yearText? You can answer 'Yes', 'No', or 'Stop'."
     ask(responseText)
   }
 
