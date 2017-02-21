@@ -68,5 +68,4 @@ package object util extends StrictLogging {
     }
   }
 
-
 }
