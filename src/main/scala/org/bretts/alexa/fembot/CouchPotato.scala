@@ -127,9 +127,9 @@ class CouchPotatoSpeechModel(url: String, apiKey: String) extends StrictLogging 
         request.intent match {
           case "AMAZON.YesIntent" =>
             if (movie.imdb.exists(imdb => Await.result(cp.addMovie(imdb), timeout)))
-              reply(s"${movie.titles.head} successfully added")
+              reply(s"'${movie.titles.head}' successfully added")
             else
-              reply(s"${movie.titles.head} could not be added")
+              reply(s"'${movie.titles.head}' could not be added")
           case "AMAZON.NoIntent" =>
             session.attribute[Seq[SearchMovie]]("remaining") match {
               case head +: tail =>
@@ -153,7 +153,7 @@ class CouchPotatoSpeechModel(url: String, apiKey: String) extends StrictLogging 
     session.attribute_=("name", name)
     session.attribute_=("movie", movie)
     session.attribute_=("remaining", remaining)
-    val yearText = movie.year.map(y => s" from $y")
+    val yearText = movie.year.map(y => s" from $y").getOrElse("")
     val responseText = s"Did you mean '${movie.titles.head}'$yearText? You can answer 'Yes', 'No', or 'Stop'."
     ask(responseText)
   }
