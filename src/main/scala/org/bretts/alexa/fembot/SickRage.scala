@@ -125,7 +125,7 @@ class SickRage(url: String, apiKey: String) extends StrictLogging {
     response.map(_.data.flatMap(_.results).getOrElse(Seq()))
   }
 
-  def addShow(tvdbid: String): Future[Boolean] = {
+  def addShow(tvdbid: Int): Future[Boolean] = {
     val requestUrl = s"$url/api/$apiKey/?cmd=show.addnew&tvdbid=$tvdbid&lang=en&status=wanted"
     logger.info(s"addMovie URL: $requestUrl")
     val response: Future[SimpleResponse] = Http().singleRequest(HttpRequest(
