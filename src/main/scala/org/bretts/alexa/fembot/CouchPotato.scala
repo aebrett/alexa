@@ -172,6 +172,8 @@ class CouchPotatoSpeechModel(url: String, apiKey: String) extends StrictLogging 
       case CouchPotatoSpeechModel.DrRegex() =>
         val replaced = s.replace("Dr.", "Doctor")
         Seq(s, replaced)
+      case _ =>
+        Seq(s)
     }
     for {
       a <- alphanum(name)
